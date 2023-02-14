@@ -44,6 +44,6 @@ $linkedvm = New-VM -LinkedClone -Name $linkedClone -VM $vm -ReferenceSnapshot $s
 # Create full independent version from linked clone
 $newvm = New-VM -Name $newVMName -VM $linkedvm -VMHost $vmhost -Datastore $ds
 # Create snapshot of new vm
-$newvm | New-Shapshot -Name $snapshotName
+$newvm | New-Snapshot -Name $snapshotName
 # Removed old link
 $linkedvm | Remove-VM
