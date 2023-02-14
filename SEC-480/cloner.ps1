@@ -46,4 +46,4 @@ $newvm = New-VM -Name $newVMName -VM $linkedvm -VMHost $vmhost -Datastore $ds
 # Create snapshot of new vm
 $newvm | New-Snapshot -Name $snapshotName
 # Removed old link
-$linkedvm | Remove-VM
+$linkedvm | Remove-VM -DeletePermanently
