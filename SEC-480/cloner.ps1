@@ -17,7 +17,7 @@ $vmname = Read-Host "Please enter VM that you would like to clone:"
 
 # Show VM Snapshots
 Write-Host "--Snapshots--"
-$vmname | Get-Snapshot | Select-Object Name -ExpandProperty Name
+Get-Snapshot -VM $vmname | Select-Object Name -ExpandProperty Name
 Write-Host "-------------"
 $snapshotName = Read-Host "Enter Snapshot that you would like to clone:"
 
