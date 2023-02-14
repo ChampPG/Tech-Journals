@@ -17,7 +17,7 @@ $vmname = Read-Host "Please enter VM that you would like to clone:"
 
 # Show VM Snapshots
 Write-Host "--Snapshots--"
-$vmname | Get-Snapshot | Select-Object Name -ExpandProperty Name
+Get-Snapshot -VM $vmname | Select-Object Name -ExpandProperty Name
 Write-Host "-------------"
 $snapshotName = Read-Host "Enter Snapshot that you would like to clone:"
 
@@ -44,6 +44,6 @@ $linkedvm = New-VM -LinkedClone -Name $linkedClone -VM $vm -ReferenceSnapshot $s
 # Create full independent version from linked clone
 $newvm = New-VM -Name $newVMName -VM $linkedvm -VMHost $vmhost -Datastore $ds
 # Create snapshot of new vm
-$newvm | New-Shapshot -Name $snapshotName
+$newvm | New-Snapshot -Name $snapshotName
 # Removed old link
-$linkedvm | Remove-VM
+$linkedvm | Remove-VM -DeletePermanently
