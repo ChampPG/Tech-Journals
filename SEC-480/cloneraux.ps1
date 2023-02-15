@@ -49,6 +49,6 @@ $ds = Get-Datastore -Name $dsName
 # The name of the vm replaces {0}
 $linkedClone = $cloneName
 # To create new linked clone
-$linkedvm = New-VM -LinkedClone -Name $linkedClone -VM $vm -ReferenceSnapshot $snapshot -VMHost $vmhost -Datastore $ds\
+$linkedvm = New-VM -LinkedClone -Name $linkedClone -VM $vm -ReferenceSnapshot $snapshot -VMHost $vmhost -Datastore $ds
 # Set Adapter
 $linkedvm | Get-NetworkAdapter | Set-NetworkAdapter -NetworkName 480-WAN
