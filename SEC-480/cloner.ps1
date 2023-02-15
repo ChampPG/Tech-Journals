@@ -7,28 +7,28 @@
 Write-Host "--VM Host--"
 Get-VMHost | Select-Object Name -ExpandProperty Name
 Write-Host "-----------"
-$vmhostIP = Read-Host "Please enter VM Host IP you would like to use:"
+$vmhostIP = Read-Host "Please enter VM Host IP you would like to use"
 
 # Show VMs
 Write-Host "--VMs--"
 Get-VM | Select-Object Name -ExpandProperty Name
 Write-Host "-------"
-$vmname = Read-Host "Please enter VM that you would like to clone:"
+$vmname = Read-Host "Please enter VM that you would like to clone"
 
 # Show VM Snapshots
 Write-Host "--Snapshots--"
 Get-Snapshot -VM $vmname | Select-Object Name -ExpandProperty Name
 Write-Host "-------------"
-$snapshotName = Read-Host "Enter Snapshot that you would like to clone:"
+$snapshotName = Read-Host "Enter Snapshot that you would like to clone"
 
 # Show Datastores
 Write-Host "--Datastores--"
 Get-Datastore | Select-Object Name -ExpandProperty Name
 Write-Host "--------------"
-$dsName = Read-Host "Select Datastore you would like to use:"
+$dsName = Read-Host "Select Datastore you would like to use"
 
 # New VM name
-$newVMName = Read-Host "Please enter new VM Name:"
+$newVMName = Read-Host "Please enter new VM Name"
 
 $vm = Get-VM -Name $vmname
 # Get snapshot name
