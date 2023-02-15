@@ -40,10 +40,10 @@ $cloneName = Read-Host "Enter the name for the clone"
 
 # Get vmhost
 $vmhost = Get-VMHost -Name $vmhostIP
-# Get snapshot name
-$snapshot = Get-Snapshot -VM $vm -Name $snapshotName
 # Get VM
 $vm = Get-VM -Name $vmname
+# Get snapshot name
+$snapshot = Get-Snapshot -VM $vm -Name $snapshotName
 # Get Data Store
 $ds = Get-Datastore -Name $dsName
 # The name of the vm replaces {0}
