@@ -3,8 +3,10 @@
 #   Paul Gleason  #
 ###################
 
+# Check if connected to server
 $connectCheck = $global:defaultviserver | Select-Object Name -ExpandProperty Name
 
+# if not connected prompt to connect
 if ( $connectCheck -eq ""){
     #Connect to vcenter
     $vcenterdomain = Read-Host "Please enter domain for vcenter"
