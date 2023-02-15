@@ -10,7 +10,7 @@ $connectCheck = $global:defaultviserver | Select-Object Name -ExpandProperty Nam
 if ( $connectCheck -eq ""){
     #Connect to vcenter
     $vcenterdomain = Read-Host "Please enter domain for vcenter"
-    Connect-VISever -Server $vcenterdomain
+    Connect-VIServer -Server $vcenterdomain
 }
 
 # Show hosts

@@ -1,0 +1,7 @@
+{
+    "vcenter_server" : "vcenter.paul.local",
+    "vm_folder" : "BASEVM",
+    "esxi_host" : "192.168.7.32",
+    "default_network" : "480-WAN",
+    "default_datastore" : "datastore1-super20"
+}
