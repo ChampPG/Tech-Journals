@@ -37,7 +37,11 @@ function Menu()
 
     switch($selection){
         '1' {
-            Disconnect-VIServer -server * -Force -Confirm:$false
+            $conn = $global:DefaultVIServer
+            # Already connect?
+            if ($conn){
+                Disconnect-VIServer -server * -Force -Confirm:$false
+            }
             Exit
         }
         '2' {
