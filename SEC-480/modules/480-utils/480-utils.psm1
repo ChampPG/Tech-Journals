@@ -25,6 +25,29 @@ function 480Connect([string] $server)
     }
 
 }
+function Menu()
+{
+    Write-Host "
+    Please select an option:
+    [1] Exit
+    [2] Base Clone
+    [3] Linked Clone
+    "
+    $selection = Read-Host "Enter the option above"
+
+    switch($selection){
+        '1' {
+            Disconnect-VIServer -server * -Force -Confirm:$false
+            Exit
+        }
+        '2' {
+            BaseClone
+        }
+        '3' {
+            LCloneVM
+        }
+    }
+}
 function Get-480Config([string] $config_path)
 {
     Write-Host 'Reading ' $config_path
@@ -67,3 +90,13 @@ function Select-VM([string] $folder)
     }
 
 }
+function BaseClone(){
+    Write-Host "Base Clone"
+}
+
+function LCloneVM(){
+    Write-Host "Linked Clone"
+}
+# Make Selector for linked or full
+
+# Add linked and full 
