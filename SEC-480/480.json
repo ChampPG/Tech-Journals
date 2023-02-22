@@ -3,5 +3,6 @@
     "vm_folder" : "BASEVM",
     "esxi_host" : "192.168.7.32",
     "default_network" : "480-WAN",
-    "default_datastore" : "datastore1-super20"
+    "default_datastore" : "datastore1-super20",
+    "snapshot" : "BASE"
 }
