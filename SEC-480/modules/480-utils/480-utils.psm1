@@ -39,8 +39,9 @@ function Menu($config)
     Write-Host "
     Please select an option:
     [1] Exit
-    [2] Base Clone
+    [2] Full Clone
     [3] Linked Clone
+    [4] Change Network For VM
     "
     $selection = Read-Host "Enter the option above"
 
@@ -56,11 +57,14 @@ function Menu($config)
         }
         '2' {
             Clear-Host
-            BaseClone($config)
+            FullClone($config)
         }
         '3' {
             Clear-Host
             LCloneVM($config)
+        }
+        '4' {
+            # Add Change Network Function
         }
     }
 }
@@ -114,7 +118,7 @@ function Select-VM([string] $folder)
     }
 
 }
-function BaseClone($config){
+function FullClone($config){
     Write-Host "Base Clone"
 
     $folder = $config.vm_folder
