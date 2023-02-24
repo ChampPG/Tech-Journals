@@ -184,6 +184,7 @@ function LCloneVM($config){
     Start-Sleep -Seconds 3
     Menu($config)
 }
-# Make Selector for linked or full
 
-# Add linked and full 
+# Turn on and off vm
+
+# Change Network Adapter
