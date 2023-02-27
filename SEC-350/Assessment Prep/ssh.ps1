@@ -7,7 +7,7 @@ if (!(Test-Path "C:\ProgramData\ssh\ssh_host_rsa_key")) {
 Start-Service sshd
 Set-Service -Name sshd -StartupType Automatic
 
-
+# Generate Keys
 ssh-keygen.exe -f .\ssh-keys 
 
 # Recommend restart
