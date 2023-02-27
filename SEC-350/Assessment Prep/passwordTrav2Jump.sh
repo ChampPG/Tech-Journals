@@ -8,5 +8,5 @@ scp ssh-keys.pub paul@JUMPIP:travel.pub
 
 ssh paul@JUMPIP <<END
   sudo -i
-  cat travel.pub >> /home/$JUMPUSER/.ssh/authorized_keys
+  cat /home/paul/travel.pub >> /home/$JUMPUSER/.ssh/authorized_keys
 END
