@@ -1,3 +1,5 @@
+#!/bin/bash
+
 JUMPUSER="jump-paul"
 
 sftp paul@172.16.150.50:ssh-keys.pub
