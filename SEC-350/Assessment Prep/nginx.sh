@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo apt-get install nginx -y
+sudo apt install nginx -y
 
 cd /var/www/html
 touch index.html
