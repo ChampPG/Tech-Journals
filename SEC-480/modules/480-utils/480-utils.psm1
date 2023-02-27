@@ -41,7 +41,8 @@ function Menu($config)
     [1] Exit
     [2] Full Clone
     [3] Linked Clone
-    [4] Change Network For VM
+    [4] Power on/off VM
+    [5] Change Network For VM
     "
     $selection = Read-Host "Enter the option above"
 
@@ -64,7 +65,8 @@ function Menu($config)
             LCloneVM($config)
         }
         '4' {
-            # Add Change Network Function
+            Clear-Host
+            SwitchOnOff
         }
     }
 }
@@ -82,6 +84,8 @@ function Get-480Config([string] $config_path)
     }
     return $conf
 }
+
+# Select VM
 function Select-VM([string] $folder)
 {
     Write-Host "Selecting your VM" -ForegroundColor "Cyan"
@@ -99,7 +103,6 @@ function Select-VM([string] $folder)
             $index+=1
         }
         $pick_index = Read-Host "Which index number [x] do you wish?"
-        #480-TODO need to deal with an invalid index | conside making this check a function
         try {
             $selected_vm = $vms[$pick_index -1]
             Write-Host "You picked " $selected_vm.Name -ForegroundColor "Green"
@@ -118,6 +121,8 @@ function Select-VM([string] $folder)
     }
 
 }
+
+# Full Clone
 function FullClone($config){
     Write-Host "Base Clone"
 
@@ -157,6 +162,8 @@ function FullClone($config){
     Start-Sleep -Seconds 3
     Menu($config)
 }
+
+# Linked Clone
 function LCloneVM($config){
     Write-Host "Linked Clone"
 
@@ -186,5 +193,63 @@ function LCloneVM($config){
 }
 
 # Turn on and off vm
+function SwitchOnOff(){
+    Write-Host "Selecting your VM" -ForegroundColor "Cyan"
+    $selected_vm=$null
+    $vms = Get-VM
+    $index = 1
+    foreach($vm in $vms)
+    {
+        # if ( $vm.name -NotLike "*.base"){
+        #     Write-Host [$index] $vm.Name
+        #     $index+=1
+        # }
+        Write-Host [$index] $vm.Name
+        $index+=1
+    }
+    $pick_index = Read-Host "Which index number [x] do you wish?"
+    try {
+        $selected_vm = $vms[$pick_index -1]
+        Write-Host "You picked " $selected_vm.Name -ForegroundColor "Green"
+    }
+    catch [Exception]{
+        $msg = 'Invalid format please select [1-{0}]' -f $index-1
+        Write-Host -ForgroundColor "Red" $msg
+    }
+
+    $OnorOff = Read-Host "Would you like to turn that VM 'on' or 'off'?"
+
+    while ($OnorOff -like 'on' -or $OnorOff -like 'off') {
+        if($OnorOff -like 'on'){
+            Start-VM -VM $selected_vm -Confirm:$true -RunAsync
+        }elseif ($OnorOff -like 'off') {
+            Stop-VM -VM $selected_vm -Confirm:$true
+        }
+    }
+    
+
+}
 
 # Change Network Adapter
+function NetworkChange(){
+    
+    $selected_vm
+    foreach($vm in $vms)
+        {
+            # if ( $vm.name -NotLike "*.base"){
+            #     Write-Host [$index] $vm.Name
+            #     $index+=1
+            # }
+            Write-Host [$index] $vm.Name
+            $index+=1
+        }
+        $pick_index = Read-Host "Which index number [x] do you wish?"
+        try {
+            $selected_vm = $vms[$pick_index -1]
+            Write-Host "You picked " $selected_vm.Name -ForegroundColor "Green"
+        }
+        catch [Exception]{
+            $msg = 'Invalid format please select [1-{0}]' -f $index-1
+            Write-Host -ForgroundColor "Red" $msg
+        }
+}
