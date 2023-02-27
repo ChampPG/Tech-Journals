@@ -1,9 +1,12 @@
 #!/bin/bash
+WINDOWSIP="172.16.150.50"
 JUMPUSER="jump-paul"
+JUMPIP="172.16.50.4"
 
-sftp paul@172.16.150.50:ssh-keys.pub
-scp ssh-keys.pub paul@172.16.50.3:travel.pub
+sftp paul@WINDOWSIP:ssh-keys.pub
+scp ssh-keys.pub paul@JUMPIP:travel.pub
 
-ssh paul@172.16.150.3 <<END
+ssh paul@JUMPIP <<END
+  sudo -i
   cat travel.pub >> /home/$JUMPUSER/.ssh/authorized_keys
 END
