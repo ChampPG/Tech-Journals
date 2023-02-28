@@ -46,29 +46,35 @@ function Menu($config)
     "
     $selection = Read-Host "Enter the option above"
 
-    switch($selection){
-        '1' {
-            Clear-Host
-            $conn = $global:DefaultVIServer
-            # Already connect?
-            if ($conn){
-                Disconnect-VIServer -server * -Force -Confirm:$false
+    try {
+        switch($selection){
+            '1' {
+                Clear-Host
+                $conn = $global:DefaultVIServer
+                # Already connect?
+                if ($conn){
+                    Disconnect-VIServer -server * -Force -Confirm:$false
+                }
+                Exit
             }
-            Exit
-        }
-        '2' {
-            Clear-Host
-            FullClone($config)
-        }
-        '3' {
-            Clear-Host
-            LCloneVM($config)
-        }
-        '4' {
-            Clear-Host
-            SwitchOnOff
+            '2' {
+                Clear-Host
+                FullClone($config)
+            }
+            '3' {
+                Clear-Host
+                LCloneVM($config)
+            }
+            '4' {
+                Clear-Host
+                SwitchOnOff
+            }
         }
     }
+    catch [Exception]{
+        Write-Host "Please rerun you were outside the selection for Menu"
+    }
+    
 }
 function Get-480Config([string] $config_path)
 {
