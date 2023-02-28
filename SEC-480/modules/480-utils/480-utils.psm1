@@ -67,7 +67,7 @@ function Menu($config)
             }
             '4' {
                 Clear-Host
-                SwitchOnOff
+                SwitchOnOff($config)
             }
         }
     }
@@ -199,7 +199,7 @@ function LCloneVM($config){
 }
 
 # Turn on and off vm
-function SwitchOnOff(){
+function SwitchOnOff($config){
     Write-Host "Selecting your VM" -ForegroundColor "Cyan"
     $selected_vm=$null
     $vms = Get-VM
@@ -233,7 +233,7 @@ function SwitchOnOff(){
         }
     }
     
-
+    Menu($config)
 }
 
 # Change Network Adapter
