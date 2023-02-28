@@ -219,7 +219,7 @@ function SwitchOnOff(){
 
     $OnorOff = Read-Host "Would you like to turn that VM 'on' or 'off'?"
 
-    while ($OnorOff -like 'on' -or $OnorOff -like 'off') {
+    while ($OnorOff -notlike 'on' -or $OnorOff -notlike 'off') {
         if($OnorOff -like 'on'){
             Start-VM -VM $selected_vm -Confirm:$true -RunAsync
         }elseif ($OnorOff -like 'off') {
