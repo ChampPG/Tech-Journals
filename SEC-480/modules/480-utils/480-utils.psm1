@@ -45,35 +45,35 @@ function Menu($config)
     [5] Change Network For VM
     "
     $selection = Read-Host "Enter the option above"
-
-    try {
-        switch($selection){
-            '1' {
-                Clear-Host
-                $conn = $global:DefaultVIServer
-                # Already connect?
-                if ($conn){
-                    Disconnect-VIServer -server * -Force -Confirm:$false
-                }
-                Exit
+    
+    switch($selection){
+        '1' {
+            Clear-Host
+            $conn = $global:DefaultVIServer
+            # Already connect?
+            if ($conn){
+                Disconnect-VIServer -server * -Force -Confirm:$false
             }
-            '2' {
-                Clear-Host
-                FullClone($config)
-            }
-            '3' {
-                Clear-Host
-                LCloneVM($config)
-            }
-            '4' {
-                Clear-Host
-                SwitchOnOff($config)
-            }
+            Exit
+        }
+        '2' {
+            Clear-Host
+            FullClone($config)
+        }
+        '3' {
+            Clear-Host
+            LCloneVM($config)
+        }
+        '4' {
+            Clear-Host
+            SwitchOnOff($config)
+        }
+        Default {
+            Write-Host -ForegroundColor "Red" "Please rerun you have selected outside the range" 
+            break
         }
     }
-    catch [Exception]{
-        Write-Host "Please rerun you were outside the selection for Menu"
-    }
+
     
 }
 function Get-480Config([string] $config_path)
