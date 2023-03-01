@@ -43,6 +43,8 @@ function Menu($config)
     [3] Linked Clone
     [4] Power on/off VM
     [5] Change Network For VM
+    [6] Create New Virtual Switch or Virtual Port Group
+    [7] Get VM IP and MacAddresses
     "
     $selection = Read-Host "Enter the option above"
     
@@ -67,6 +69,18 @@ function Menu($config)
         '4' {
             Clear-Host
             SwitchOnOff($config)
+        }
+        '5'{
+            Write-Host "W.I.P"
+            Break
+        }
+        '6'{
+            Clear-Host
+            New-Network($config)
+        }
+        '7'{
+            Clear-Host
+            Get-IP($config)
         }
         Default {
             Write-Host -ForegroundColor "Red" "Please rerun you have selected outside the range" 
@@ -234,7 +248,131 @@ function SwitchOnOff($config){
     
     Menu($config)
 }
+function New-Network($config){
 
+    Write-Host "
+    Please select which operation you would like to do.
+
+    [1] Only Create Virtual Switch
+    [2] Only Create Virtual Port Group
+    [3] Do Both Above
+    [4] Assign Existing Virtual Port Group to Virtual Switch
+    "
+    $selection = Read-Host "Which index number [x] do you wish?"
+    
+    switch($selection){
+        '1'{
+            NewVirtualSwitch($config)
+        }
+        '2'{
+            NewPortGroup($config)
+        }
+        '3'{
+            NewVirtualSwitch($config)
+            NewPortGroup($config)
+        }
+    }
+
+    Read-Host "Press Enter to Continue"
+    Menu($config)
+}
+Function NewVirtualSwitch($config){
+    $switchName = Read-Host "What would you like to name the new virtual switch"
+    $found = $null
+    foreach($switch in Get-VirtualSwitch){
+        if ($switchName -eq $switch.Name){
+            $found = $true
+            break
+        }
+    }
+    if ($found){
+        Write-Host -ForegroundColor "Red" "This switch already exists!"
+    }else {
+        New-VirtualSwitch -VMHost $config.esxi_host -Name $switchName
+    }
+}
+Function NewPortGroup($config){
+    $portGroupName = Read-Host "What would you like to name the new PortGroup"
+    $found = $null
+    foreach($group in Get-VirtualPortGroup){
+        if ($portGroupName -eq $group.Name){
+            $found = $true
+            break
+        }
+    }
+    if($found){
+        Write-Host -ForegroundColor "Red" "This group already exists!"
+    }else{
+        $selected_switch = $null
+        $switch = Get-VirtualSwitch
+        $index = 1
+        foreach($switch in $switches){
+            Write-Host [$index] $switch.Name
+            $index+=1
+        }
+        $pick_index = Read-Host "Which index number [x] do you wish?"
+        try {
+            $selected_switch = $vms[$pick_index -1]
+            Write-Host "You picked " $selected_switch.Name -ForegroundColor "Green"
+        }
+        catch [Exception]{
+            $msg = 'Invalid format please select [1-{0}]' -f $index-1
+            Write-Host -ForgroundColor "Red" $msg
+        }
+        New-VirtualPortGroup -VirtualSwitch $selected_switch -Name $portGroupName
+    }
+}
+function Get-IP($config){
+    #$vm = Select-VM($config)
+
+    $selected_vm=$null
+    $vms = Get-VM -Location $folder
+    $index = 1
+    foreach($vm in $vms)
+    {
+        # if ( $vm.name -NotLike "*.base"){
+        #     Write-Host [$index] $vm.Name
+        #     $index+=1
+        # }
+        Write-Host [$index] $vm.Name
+        $index+=1
+    }
+    $pick_index = Read-Host "Which index number [x] do you wish?"
+    try {
+        $selected_vm = $vms[$pick_index - 1]
+        Write-Host "You picked" $selected_vm.Name -ForegroundColor "Green"
+    }
+    catch [Exception]{
+        $msg = 'Invalid format please select [1-{0}]' -f $index-1
+        Write-Host -ForgroundColor "Red" $msg
+    }
+
+    #Get-VM -Name $vm | Get-VMGuest | Format-Table VM, IPAddress
+
+    if ($selected_vm.PowerState -eq "PoweredOn"){
+        $vars = @()
+        $vmView = Get-View $selected_vm.ID
+        $hw = $vmView.guest.net
+        foreach($dev in $hw)
+        {
+            foreach ($ip in $dev.ipaddress)
+            {
+                $vars += $dev | Select-Object @{Name = "Name"; Expression = {$selected_vm.Name}}, @{Name = "IP"; Expression = {$ip}}, @{Name = "MAC"; Expression = {$dev.macaddress}}
+            }
+        }
+        $vars | Format-Table
+    }else{
+        Write-Host "VM is off so I can only get name and MacAddress"
+        $adapters = Get-NetworkAdapter -VM $selected_vm | Select-Object MacAddress
+        foreach($adapter in $adapters){
+            $msg = 'Name = {0} | {1}' -f $selected_vm.Name, $adapter
+            Write-Host $msg 
+        }
+    }
+
+    Read-Host "Press Enter to Continue"
+    Menu($config)
+}
 # Change Network Adapter
 function NetworkChange(){
     
