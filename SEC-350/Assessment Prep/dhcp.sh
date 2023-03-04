@@ -1,5 +1,5 @@
 sudo apt update
-sudo apt install dhcpd -y
+sudo apt install isc-dhcp-server -y
 
 cp /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.backup
 
