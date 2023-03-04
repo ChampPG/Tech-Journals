@@ -15,6 +15,6 @@ subnet 172.16.150.0 netmask 255.255.255.0 {
 }
 EOM
 
-systemctl enable dhcpd
-systemctl start dhcpd
-systemctl status dhcpd
+systemctl enable isc-dhcp-server
+systemctl start isc-dhcp-server
+systemctl status isc-dhcp-server
