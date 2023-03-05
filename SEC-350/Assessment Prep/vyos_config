@@ -214,7 +214,7 @@ service {
         }
     }
     ssh {
-        listen-address 0.0.0.0
+        listen-address 172.16.150.2
     }
 }
 system {
