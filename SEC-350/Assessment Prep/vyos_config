@@ -133,7 +133,7 @@ interfaces {
 nat {
     destination {
         rule 10 {
-            description WAN HTTP to NGINX
+            description HTTP->NGINX
             destination {
                 port 80
             }
@@ -145,7 +145,7 @@ nat {
             }
         }
         rule 20 {
-            description WAN to JUMP
+            description WAN->JUMP
             destination {
                 port 22
             }
@@ -237,7 +237,7 @@ system {
             speed 115200
         }
     }
-    host-name edg01-paul
+    host-name edge01-paul
     login {
         user vyos {
             authentication {
