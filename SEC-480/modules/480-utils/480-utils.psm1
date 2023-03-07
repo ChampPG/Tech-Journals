@@ -30,7 +30,6 @@ function 480Connect([string] $server)
         }
         
     }
-
 }
 function Menu($config)
 {
@@ -71,8 +70,8 @@ function Menu($config)
             SwitchOnOff($config)
         }
         '5'{
-            Write-Host "W.I.P"
-            Break
+            Clear-Host
+            NetworkChange($config)
         }
         '6'{
             Clear-Host
@@ -87,8 +86,6 @@ function Menu($config)
             break
         }
     }
-
-    
 }
 function Get-480Config([string] $config_path)
 {
@@ -104,7 +101,6 @@ function Get-480Config([string] $config_path)
     }
     return $conf
 }
-
 # Select VM
 function Select-VM([string] $folder)
 {
@@ -141,7 +137,6 @@ function Select-VM([string] $folder)
     }
 
 }
-
 # Full Clone
 function FullClone($config){
     Write-Host "Base Clone"
@@ -182,36 +177,38 @@ function FullClone($config){
     Start-Sleep -Seconds 3
     Menu($config)
 }
-
 # Linked Clone
 function LCloneVM($config){
     Write-Host "Linked Clone"
 
-    $isFound = $null
+    # $isFound = $null
     $folder = $config.vm_folder
     $vm = Select-VM -folder $folder
 
-    foreach ($realvm in Get-VM){
-        if (“{0}.linked” -f $vm.name -eq $realvm.name){
-            Write-Host "Link is already created"
-            $isFound = $true
-            break
-        }else{
-            $linkedClone = “{0}.linked” -f $vm.name 
-            $isFound = $false
-            break
-        }
-    }
-    if (!$isFound){
-        # To create new linked clone
-        Write-Host "Creating Linked Clone"
-        New-VM -LinkedClone -Name $linkedClone -VM $vm -ReferenceSnapshot $config.snapshot -VMHost $config.esxi_host -Datastore $config.default_datastore
-    }
+    # foreach ($realvm in Get-VM){
+    #     if (“{0}.linked” -f $vm.name -eq $realvm.name){
+    #         Write-Host "Link is already created"
+    #         $isFound = $true
+    #         break
+    #     }else{
+    #         $linkedClone = “{0}.linked” -f $vm.name 
+    #         $isFound = $false
+    #         break
+    #     }
+    # }
+    # if (!$isFound){
+    #     # To create new linked clone
+    #     Write-Host "Creating Linked Clone"
+    #     New-VM -LinkedClone -Name $linkedClone -VM $vm -ReferenceSnapshot $config.snapshot -VMHost $config.esxi_host -Datastore $config.default_datastore
+    # }
+
+    $linkedClone = Read-Host "What would you like to name the linkedclone"
+    Write-Host "Creating Linked Clone"
+    New-VM -LinkedClone -Name $linkedClone -VM $vm -ReferenceSnapshot $config.snapshot -VMHost $config.esxi_host -Datastore $config.default_datastore
 
     Start-Sleep -Seconds 3
     Menu($config)
 }
-
 # Turn on and off vm
 function SwitchOnOff($config){
     Write-Host "Selecting your VM" -ForegroundColor "Cyan"
@@ -244,12 +241,10 @@ function SwitchOnOff($config){
     }elseif ($OnorOff -like 'off') {
         Stop-VM -VM $selected_vm -Confirm:$true
     }
-
-    
+   
     Menu($config)
 }
 function New-Network($config){
-
     Write-Host "
     Please select which operation you would like to do.
 
@@ -325,6 +320,8 @@ Function NewPortGroup($config){
 function Get-IP($config){
     #$vm = Select-VM($config)
 
+    Write-Host "Select VM Below to get IP, Hostname, Mac Address"
+
     $selected_vm=$null
     $vms = Get-VM -Location $folder
     $index = 1
@@ -349,34 +346,43 @@ function Get-IP($config){
 
     #Get-VM -Name $vm | Get-VMGuest | Format-Table VM, IPAddress
 
-    if ($selected_vm.PowerState -eq "PoweredOn"){
-        $vars = @()
-        $vmView = Get-View $selected_vm.ID
-        $hw = $vmView.guest.net
-        foreach($dev in $hw)
-        {
-            foreach ($ip in $dev.ipaddress)
-            {
-                $vars += $dev | Select-Object @{Name = "Name"; Expression = {$selected_vm.Name}}, @{Name = "IP"; Expression = {$ip}}, @{Name = "MAC"; Expression = {$dev.macaddress}}
-            }
-        }
-        $vars | Format-Table
-    }else{
-        Write-Host "VM is off so I can only get name and MacAddress"
-        $adapters = Get-NetworkAdapter -VM $selected_vm | Select-Object MacAddress
-        foreach($adapter in $adapters){
-            $msg = 'Name = {0} | {1}' -f $selected_vm.Name, $adapter
-            Write-Host $msg 
-        }
-    }
+    # if ($selected_vm.PowerState -eq "PoweredOn"){
+    #     $vars = @()
+    #     $vmView = Get-View $selected_vm.ID
+    #     $hw = $vmView.guest.net
+    #     foreach($dev in $hw)
+    #     {
+    #         foreach ($ip in $dev.ipaddress)
+    #         {
+    #             $vars += $dev | Select-Object @{Name = "Name"; Expression = {$selected_vm.Name}}, @{Name = "IP"; Expression = {$ip}}, @{Name = "MAC"; Expression = {$dev.macaddress}}
+    #         }
+    #     }
+    #     $vars | Format-Table
+    # }else{
+    #     Write-Host "VM is off so I can only get name and MacAddress"
+    #     $adapters = Get-NetworkAdapter -VM $selected_vm | Select-Object MacAddress
+    #     foreach($adapter in $adapters){
+    #         $msg = 'Name = {0} | {1}' -f $selected_vm.Name, $adapter
+    #         Write-Host $msg 
+    #     }
+    # }
 
+    $IpAddress = Get-VM $selected_vm | Select-Object @{N="IP Address";E={@($_.Guest.IPAddress[0])}} | Select-Object -ExpandProperty "IP Address"
+    $Mac = Get-VM $selected_vm | Get-NetworkAdapter -Name "Network adapter 1" | Select-Object -ExpandProperty MacAddress
+
+    $msg = "{0} hostname={1} mac={2}" -f $IpAddress,$selected_vm,$Mac
+
+    Write-Host $msg
+    
     Read-Host "Press Enter to Continue"
     Menu($config)
 }
 # Change Network Adapter
-function NetworkChange(){
+function NetworkChange($config){
     
-    $selected_vm
+    $selected_vm=$null
+    $vms = Get-VM -Location $folder
+    $index = 1
     foreach($vm in $vms)
         {
             # if ( $vm.name -NotLike "*.base"){
@@ -386,13 +392,24 @@ function NetworkChange(){
             Write-Host [$index] $vm.Name
             $index+=1
         }
-        $pick_index = Read-Host "Which index number [x] do you wish?"
-        try {
-            $selected_vm = $vms[$pick_index -1]
-            Write-Host "You picked " $selected_vm.Name -ForegroundColor "Green"
-        }
-        catch [Exception]{
-            $msg = 'Invalid format please select [1-{0}]' -f $index-1
-            Write-Host -ForgroundColor "Red" $msg
-        }
+    $pick_index = Read-Host "Which index number [x] do you wish?"
+    try {
+        $selected_vm = $vms[$pick_index -1]
+        Write-Host "You picked " $selected_vm.Name -ForegroundColor "Green"
+    }
+    catch [Exception]{
+        $msg = 'Invalid format please select [1-{0}]' -f $index-1
+        Write-Host -ForgroundColor "Red" $msg
+    }
+
+    Get-VirtualNetwork
+    $network = Read-Host "Enter network from above you would like to use"
+
+    Get-NetworkAdapter -VM $selected_vm | Select-Object Name -ExpandProperty Name
+    $adapter_select = Read-Host "What adpater would you like to change?"
+
+    Get-VM $selected_vm | Get-NetworkAdapter -Name $adapter_select | Set-NetworkAdapter -NetworkName $network -Confirm:$false
+
+    Read-Host "Press Enter to Continue"
+    Menu($config)
 }
