@@ -1,0 +1,17 @@
+#usage: ansible-playbook -i inventories/fw-blue1-vars.yaml --ask-pass vyos-blue.yml
+vyos:
+  hosts:
+    10.0.17.200:
+      hostname: blue1-fw
+      lan_ip: 10.0.5.2
+      lan: 10.0.5.0/24
+      dhcp_name_server: 10.0.5.5
+      shared_network: BLUE1
+      dhcp_domain: blue1.local
+      mac: 00:50:56:b8:77:a7
+
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    ansible_connection: network_cli
+    ansible_network_os: vyos
+    ansible_user: vyos
