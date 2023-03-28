@@ -1,32 +1,32 @@
 linux:
   hosts:
-    children:
-      rocky:
-        hosts:
-          10.0.5.77:
-            hostname: rocky-1
-            lan_ip: 10.0.5.10
-          10.0.5.75:
-            hostname: rocky-2
-            lan_ip: 10.0.5.11
-          10.0.5.76:
-            hostname: rocky-3
-            lan_ip: 10.0.5.12
-        vars:
-          device: "{{ ansible_default_ipv4.interface }}"
+  children:
+    rocky:
+      hosts:
+        10.0.5.77:
+          hostname: rocky-1
+          lan_ip: 10.0.5.10
+        10.0.5.75:
+          hostname: rocky-2
+          lan_ip: 10.0.5.11
+        10.0.5.76:
+          hostname: rocky-3
+          lan_ip: 10.0.5.12
+      vars:
+        device: "{{ ansible_default_ipv4.interface }}"
 
-      ubuntu:
-        hosts:
-          10.0.5.78:
-            hostname: ubuntu-1
-            lan_ip: 10.0.5.30
-          10.0.5.79:
-            hostname: ubuntu-2
-            lan_ip: 10.0.5.31
+    ubuntu:
+      hosts:
+        10.0.5.78:
+          hostname: ubuntu-1
+          lan_ip: 10.0.5.30
+        10.0.5.79:
+          hostname: ubuntu-2
+          lan_ip: 10.0.5.31
 
   vars:
-    public_key: ""
-    anisble_user: champuser
+    public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC1PAcXqQEt2YoNe3Ddkw73RzJ9kiA4qZuodEJQECI+qElkez4JbwK+ryumZmMLO1NO4smY1uzO/iBMAbB356xT9bMkRZGRPMzfe8p7gOJ1uNK+gGmKPtfIb47ffsK2k8hJAqcozbmUhj/XO0wZUx70kQSCr1aPL8LdeAkxk+DawHnXUM8UkKKac0PCnRlCd7afVS5uWWR4jDrQLlaoAhZQLMhB6wFwsihhW30UmgnSrnlnhe86LwaVEh4h7rSJlDkaKZLCNwIy7h//E7O9S5U0E8IOHE2bflItTWXW5XTvG26SezOgEsvqsYL8zZrTrQkdwozw5W/JZhjpQefDzegOMz8Nh+en+MvlOgbD4RI21/CtBAoterX6uPANYQPYVRU08Lbfa7PQXpLylmvWloohpkxYeA0V17y57wDXU41LeGtR9txcgvHVLKLZUCMQJprMf7nodwlW38rVJ+RerDn8G27sDRlM55vNQhP9VEn0V/LfZaCeA6wE9G0IEbwXWME= paul@xubuntu-wan"
+    ansible_user: champuser
     prefix: 24
     gateway: 10.0.5.2
     name_server: 10.0.5.5
