@@ -1,0 +1,36 @@
+- name: Install Wazuh Server on Ubuntu
+  hosts: wazuhservers
+  become: true
+  
+  vars:
+    wazuh_version: "4.2.5"
+  
+  tasks:
+    - name: Install prerequisites
+      apt:
+        name:
+          - curl
+          - apt-transport-https
+          - lsb-release
+          - gnupg
+        state: present
+
+    - name: Add Wazuh GPG key
+      apt_key:
+        url: https://packages.wazuh.com/key/GPG-KEY-WAZUH
+        state: present
+
+    - name: Add Wazuh repository
+      apt_repository:
+        repo: "deb https://packages.wazuh.com/{{ wazuh_version }}/xUbuntu_{{ ansible_distribution_release }}/ ./"
+        state: present
+
+    - name: Install Wazuh server
+      apt:
+        name: wazuh-manager
+        state: present
+
+    - name: Start Wazuh server service
+      service:
+        name: wazuh-manager
+        state: started
