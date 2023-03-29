@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Sources:
-https://www.wireguard.com/quickstart/
-https://askubuntu.com/questions/906325/ubuntu-iptables-nat-router-port-forwarding
-https://superuser.com/questions/269980/iptables-for-transparent-tcp-proxy
+# https://www.wireguard.com/quickstart/
+# https://askubuntu.com/questions/906325/ubuntu-iptables-nat-router-port-forwarding
+# https://superuser.com/questions/269980/iptables-for-transparent-tcp-proxy
 
 
 # Prompt user to enter the name of their main Ethernet adapter
