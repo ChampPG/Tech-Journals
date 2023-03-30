@@ -45,7 +45,7 @@ END
 sudo mkdir -p /etc/wireguard/clients/
 sudo tee /etc/wireguard/clients/client1-GCorp.conf << END
 [Interface]
-Address = 10.0.0.2/32
+Address = 10.0.0.2/24
 PrivateKey = $(sudo cat /etc/wireguard/privatekey-client)
 
 [Peer]
