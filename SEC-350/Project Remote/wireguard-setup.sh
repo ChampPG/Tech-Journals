@@ -37,7 +37,7 @@ PostDown = iptables -t nat -D PREROUTING -p tcp -d 10.0.0.1 --dport 3389 -j DNAT
 
 [Peer]
 PublicKey = $(sudo cat /etc/wireguard/publickey-client)
-AllowedIPs = 0.0.0.0/0
+AllowedIPs = 10.0.0.2/32
 PersistentKeepalive = 21
 END
 
