@@ -31,8 +31,8 @@ ListenPort = 51820
 
 PreUp = sysctl -w net.ipv4.ip_forward=1
 PreUp = iptables -t nat -A PREROUTING -p tcp -d 10.0.0.1 --dport 3389 -j DNAT --to-destination 172.16.200.11:3389
-PostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o $adapter_name -j MASQUERADE
-PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o $adapter_name -j MASQUERADE
+PreUp = iptables -t nat -A POSTROUTING -o $adapter_name -j MASQUERADE
+PostDown = iptables -t nat -D POSTROUTING -o $adapter_name -j MASQUERADE
 PostDown = iptables -t nat -D PREROUTING -p tcp -d 10.0.0.1 --dport 3389 -j DNAT --to-destination 172.16.200.11:3389
 
 [Peer]
