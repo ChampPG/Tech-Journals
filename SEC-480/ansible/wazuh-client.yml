@@ -1,5 +1,5 @@
 # Usage: ansible-playbook -i inventories/wazuh.yaml --ask-pass wazuh-client.yaml
-- name: Wazuh Server Config
+- name: Wazuh Client Install
   hosts: wazuh_client
   tasks:
     - name: Put Wazuh Client Install
@@ -10,11 +10,6 @@
         mode: "0644"
         owner: champuser
         group: champuser
-  
-    # - name: Install Wazuh Client
-    #   ansible.builtin.shell:
-    #     chdir: /home/{{ ansible_user }}/
-    #     cmd: curl -so wazuh-agent-4.3.10.deb https://packages.wazuh.com/4.x/apt/pool/main/w/wazuh-agent/wazuh-agent_4.3.10-1_amd64.deb
     
     - name: Installing wazuh agent
       ansible.builtin.shell: |
