@@ -1,5 +1,6 @@
+# Usage: ansible-playbook -i inventories/linux.yaml --ask-pass ubuntu-playbook.yaml
 - name: Ubuntu config
-  hosts: ubuntu
+  hosts: wazuh_client, wazuh_server
   tasks:
     - name: create the .ssh directory if it is not there
       file:

@@ -1,36 +1,20 @@
-- name: Install Wazuh Server on Ubuntu
-  hosts: wazuhservers
-  become: true
-  
-  vars:
-    wazuh_version: "4.2.5"
-  
+# Usage: ansible-playbook -i inventories/linux.yaml --ask-pass wazuh-server.yaml
+- name: Wazuh Server Config
+  hosts: wazuh_server
   tasks:
-    - name: Install prerequisites
-      apt:
-        name:
-          - curl
-          - apt-transport-https
-          - lsb-release
-          - gnupg
-        state: present
-
-    - name: Add Wazuh GPG key
-      apt_key:
-        url: https://packages.wazuh.com/key/GPG-KEY-WAZUH
-        state: present
-
-    - name: Add Wazuh repository
-      apt_repository:
-        repo: "deb https://packages.wazuh.com/{{ wazuh_version }}/xUbuntu_{{ ansible_distribution_release }}/ ./"
-        state: present
-
-    - name: Install Wazuh server
-      apt:
-        name: wazuh-manager
-        state: present
-
-    - name: Start Wazuh server service
-      service:
-        name: wazuh-manager
-        state: started
+    - name: Install Wazuh Server Script
+      ansible.builtin.shell:
+        chdir: /home/{{ ansible_user }}/
+        cmd: curl -sO https://packages.wazuh.com/4.3/wazuh-install.sh
+    
+    - name: Run Wazuh Server Script
+      ansible.builtin.shell:
+        cmd: bash ./wazuh-install.sh -a -i
+        chdir: /home/{{ ansible_user }}/
+      become: true
+    
+    # - name: bounce the box
+    #   shell: "sleep 5 && shutdown -r"
+    #   become: yes
+    #   async: 1
+    #   poll: 0

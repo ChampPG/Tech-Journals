@@ -1,0 +1,16 @@
+linux:
+  hosts:
+  children:
+    wazuh_server:
+      hosts:
+        10.0.5.15:
+          hostname: wazuh-server
+
+    wazuh_client:
+      hosts:
+        10.0.5.35:
+          hostname: wazuh-client
+
+  vars:
+    ansible_user: champuser
+    wazuh_server: 10.0.5.15
