@@ -44,6 +44,7 @@ function Menu($config)
     [5] Change Network For VM
     [6] Create New Virtual Switch or Virtual Port Group
     [7] Get VM IP and MacAddresses
+    [8] Windows Config
     "
     $selection = Read-Host "Enter the option above"
     
@@ -80,6 +81,10 @@ function Menu($config)
         '7'{
             Clear-Host
             Get-IP($config)
+        }
+        '8'{
+            Clear-Host
+            WindowsConfig($config)
         }
         Default {
             Write-Host -ForegroundColor "Red" "Please rerun you have selected outside the range" 
@@ -411,5 +416,46 @@ function NetworkChange($config){
     Get-VM $selected_vm | Get-NetworkAdapter -Name $adapter_select | Set-NetworkAdapter -NetworkName $network -Confirm:$false
 
     Read-Host "Press Enter to Continue"
+    Menu($config)
+}
+
+Function WindowsConfig($config){
+    
+    # Select VM
+
+    Write-Host "Select the VM you'd like to change the config of:"
+    Write-Host ""
+    Get-VM -Location $config.vm_folder | Select-Object Name -ExpandProperty Name
+    Write-Host ""
+    $vm = Read-Host "What VM would you like to change the config on: "
+    Write-Host ""
+
+    # Authentication
+    $user = Read-Host "What user account would you like to authenticate with"
+    $user_pass = Read-Host -AsSecureString "What is that user's password"
+
+    # Gathering info for invoke script
+    Write-Host""
+    Invoke-VMScript -ScriptText "Get-NetAdapter | Select-Object Name" -VM $vm -GuestUser $user -GuestPassword $user_pass
+    Write-Host ""
+    $adapterName = Read-Host "Please enter the name of the network adapter you'd like to use"
+
+    Write-Host ""
+    $ip = Read-Host "What would you like the IP address to be"
+    Write-Host ""
+    $netmask = Read-Host "What would you like the netmask to be"
+    Write-Host ""
+    $gw = Read-Host "What would you like the gateway to be"
+    Write-Host ""
+    $dns = Read-Host "What would you like to set the name server to"
+    Write-Host ""
+
+    $cmd1 = "netsh interface ipv4 set address '$adapterName' static $ip $netmask $gw"
+    $cmd2 = "netsh interface ipv4 add dns '$adapterName' $dns index=1"
+    Invoke-VMScript -ScriptText $cmd1 -VM $vm -GuestUser $user -GuestPassword $user_pass
+    Invoke-VMScript -ScriptText $cmd2 -VM $vm -GuestUser $user -GuestPassword $user_pass
+
+    Start-Sleep -Seconds 3
+
     Menu($config)
 }
