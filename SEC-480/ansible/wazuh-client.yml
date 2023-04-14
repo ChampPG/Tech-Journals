@@ -1,0 +1,21 @@
+# Usage: ansible-playbook -i inventories/wazuh.yaml --ask-pass wazuh-client.yaml
+- name: Wazuh Client Install
+  hosts: wazuh_client
+  tasks:
+    - name: Put Wazuh Client Install
+      become: yes
+      ansible.builtin.copy:
+        src: files/wazuh/wazuh-agent_4.3.10-1_amd64.deb
+        dest: /home/{{ ansible_user }}/wazuh-agent-4.3.10.deb
+        mode: "0644"
+        owner: champuser
+        group: champuser
+    
+    - name: Installing wazuh agent
+      ansible.builtin.shell: |
+        cd /home/{{ ansible_user }}/
+        sudo WAZUH_MANAGER='{{ wazuh_server }}' WAZUH_AGENT_GROUP='default' dpkg -i ./wazuh-agent-4.3.10.deb
+        sudo systemctl daemon-reload
+        sudo systemctl enable wazuh-agent
+        sudo systemctl start wazuh-agent
+      become: true

@@ -44,6 +44,7 @@ function Menu($config)
     [5] Change Network For VM
     [6] Create New Virtual Switch or Virtual Port Group
     [7] Get VM IP and MacAddresses
+    [8] Windows Config
     "
     $selection = Read-Host "Enter the option above"
     
@@ -80,6 +81,10 @@ function Menu($config)
         '7'{
             Clear-Host
             Get-IP($config)
+        }
+        '8'{
+            Clear-Host
+            WindowsConfig($config)
         }
         Default {
             Write-Host -ForegroundColor "Red" "Please rerun you have selected outside the range" 
@@ -411,5 +416,56 @@ function NetworkChange($config){
     Get-VM $selected_vm | Get-NetworkAdapter -Name $adapter_select | Set-NetworkAdapter -NetworkName $network -Confirm:$false
 
     Read-Host "Press Enter to Continue"
+    Menu($config)
+}
+
+Function WindowsConfig($config){
+    
+    Write-Host "Select VM Below to get IP, Hostname, Mac Address"
+
+    $selected_vm=$null
+    $vms = Get-VM -Location $folder
+    $index = 1
+    foreach($vm in $vms)
+    {
+        # if ( $vm.name -NotLike "*.base"){
+        #     Write-Host [$index] $vm.Name
+        #     $index+=1
+        # }
+        Write-Host [$index] $vm.Name
+        $index+=1
+    }
+    $pick_index = Read-Host "Which index number [x] do you wish?"
+    try {
+        $selected_vm = $vms[$pick_index - 1]
+        Write-Host "You picked" $selected_vm.Name -ForegroundColor "Green"
+    }
+    catch [Exception]{
+        $msg = 'Invalid format please select [1-{0}]' -f $index-1
+        Write-Host -ForgroundColor "Red" $msg
+    }
+
+    # Authentication
+    $user = Read-Host "What user account would you like to authenticate with"
+    $user_pass = Read-Host -AsSecureString "What is that user's password"
+
+    # Gathering info for invoke script
+    Write-Host""
+    Invoke-VMScript -ScriptText "Get-NetAdapter | Select-Object Name" -VM $selected_vm -GuestUser $user -GuestPassword $user_pass
+    Write-Host ""
+    $adapterName = Read-Host "Please enter the name of the network adapter you'd like to use"
+
+    $ip = Read-Host "What would you like the IP address to be"
+    $netmask = Read-Host "What would you like the netmask to be"
+    $gw = Read-Host "What would you like the gateway to be"
+    $dns = Read-Host "What would you like to set the name server to"
+
+    $cmd1 = "netsh interface ipv4 set address '$adapterName' static $ip $netmask $gw"
+    $cmd2 = "netsh interface ipv4 add dns '$adapterName' $dns index=1"
+    Invoke-VMScript -ScriptText $cmd1 -VM $selected_vm -GuestUser $user -GuestPassword $user_pass
+    Invoke-VMScript -ScriptText $cmd2 -VM $selected_vm -GuestUser $user -GuestPassword $user_pass
+
+    Start-Sleep -Seconds 3
+
     Menu($config)
 }
