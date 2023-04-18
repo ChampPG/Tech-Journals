@@ -1,0 +1,11 @@
+windows:
+  hosts:
+  children:
+    dc:
+      hosts:
+        10.0.5.5:
+          hostname: dc-blue1
+  
+  vars:
+    ansible_user: deployer
+    ansible_shell_type: powershell
