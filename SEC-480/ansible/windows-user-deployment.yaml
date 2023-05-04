@@ -1,0 +1,33 @@
+# run with: ansible-playbook windows-user-deployment.yml --ask-pass -K -i inventories/windows.yaml
+- name: Adding Users and Groups
+  hosts: dc
+  tasks:
+  - name: "Read CSV '{{ csv_path }}'"
+    community.general.read_csv:
+      path: "{{ csv_path }}"
+    register: users_groups
+    delegate_to: localhost
+
+  - name: "Read CSV '{{ group_path }}'"
+    community.general.read_csv:
+      path: "{{ group_path }}"
+    register: windows_groups
+    delegate_to: localhost
+  
+  - name: Create Groups
+    community.windows.win_domain_group:
+      name: "{{ item.Group }}"
+      scope: domainlocal
+      organizational_unit: OU=Groups,OU=Accounts,OU=blue1,DC=blue1,DC=local
+    loop: "{{ windows_groups.list }}"
+
+  - name: Create Users
+    community.windows.win_domain_user:
+      name: "{{ item.Name }}"
+      password: "{{ item.Password }}"
+      state: present
+      groups: 
+        - "{{ item.Group }}"
+        - Domain Users
+      path: OU=Accounts,OU=blue1,DC=blue1,DC=local
+    loop: "{{ users_groups.list }}"
