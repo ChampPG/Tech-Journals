@@ -29,11 +29,37 @@ def is_folder(obj):
 
 
 vmfolder = si.content.rootFolder.childEntity[0].vmFolder.childEntity
-for vm in vmfolder:
-        if vm.name == vm_name:
-            print(vm.name)
-            if vm.guest.ipAddress == None:
-                print("VM doesn't have an IP address")
-                print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
+for vcenter_object in vmfolder:
+        try:
+            if vm_name:
+                if vcenter_object.name == vm_name:
+                    vm = vcenter_object
+                    print(vm.name)
+                    if vm.guest.ipAddress == None:
+                        print("VM doesn't have an IP address")
+                        print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
+                    else:
+                        print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nIP Address: {vm.guest.ipAddress} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
             else:
-                print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nIP Address: {vm.guest.ipAddress} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
+                vm = vcenter_object
+                if vm.guest.ipAddress == None:
+                    print("VM doesn't have an IP address")
+                    print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
+                else:
+                    print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nIP Address: {vm.guest.ipAddress} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
+        except AttributeError:
+            print("Folder")
+            # for vm in vcenter_object:
+            #     if vm_name:
+            #         if vm_name == vm.name:
+            #             if vm.guest.ipAddress == None:
+            #                 print("VM doesn't have an IP address")
+            #                 print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
+            #             else:
+            #                 print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nIP Address: {vm.guest.ipAddress} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
+            #     else:
+            #         if vm.guest.ipAddress == None:
+            #             print("VM doesn't have an IP address")
+            #             print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
+            #         else:
+            #             print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nIP Address: {vm.guest.ipAddress} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
