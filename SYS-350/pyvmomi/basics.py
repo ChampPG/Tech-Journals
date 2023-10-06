@@ -15,8 +15,6 @@ s = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
 s.verify_mode = ssl.CERT_NONE
 
 si = SmartConnect(host=Hostinfo, user=Userinfo, pwd=Passinfo, sslContext=s)
-
-
 current_session = si.content.sessionManager.currentSession
 print(f"Current Session: \nUser Name: {current_session.userName} \nSource IP: {current_session.ipAddress} \nvCenter IP: {vCenterIP} \n")
 
