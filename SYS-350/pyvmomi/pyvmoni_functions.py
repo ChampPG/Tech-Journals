@@ -1,8 +1,23 @@
+"""
+Author: Paul Gleason
+File: pyvmomi_functions.py
+"""
+
+
 import ssl, configparser
 from pyVim.connect import SmartConnect
 from pyVmomi import vim
 
 def parse_creds(file_name):
+    """Parse the credentials from the config file
+    
+    param file_name (str): The name of the config file
+
+    This return is in list format: [Hostinfo, Userinfo, Passinfo, vCenterIP]
+    return Hostinfo (str): The IP address of the vCenter server
+    return Userinfo (str): The username of the vCenter server
+    return Passinfo (str): The password of the vCenter server
+    return vCenterIP (str): The IP address of the vCenter server"""
     file = configparser.ConfigParser()
     file.read(file_name)
 
@@ -14,6 +29,16 @@ def parse_creds(file_name):
     return Hostinfo, Userinfo, Passinfo, vCenterIP
 
 def connect(Hostinfo, Userinfo, Passinfo, vCenterIP):
+    """Connect to vCenter
+
+    param Hostinfo (str): The IP address of the vCenter server
+    param Userinfo (str): The username of the vCenter server
+    param Passinfo (str): The password of the vCenter server
+    param vCenterIP (str): The IP address of the vCenter server
+    
+    return si (obj): The connection to vCenter
+    
+    return None"""
     s = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
     s.verify_mode = ssl.CERT_NONE
 
@@ -23,6 +48,13 @@ def connect(Hostinfo, Userinfo, Passinfo, vCenterIP):
     return si
 
 def power_on_vm(si, vm_name, silent):
+    """Power on a VM
+    
+    param si (obj): The connection to vCenter
+    param vm_name (str): The name of the VM to power on
+    param silent (bool): Whether or not to print the VM info
+    
+    return None"""
     vm = search_vms(si, vm_name, silent)
     if vm.runtime.powerState == 'poweredOff':
         vm.PowerOn()
@@ -30,7 +62,29 @@ def power_on_vm(si, vm_name, silent):
     else:
         print(f"VM {vm_name} is already powered on")
 
+def power_off_vm(si, vm_name, silent):
+    """Power off a VM
+
+    param si (obj): The connection to vCenter
+    param vm_name (str): The name of the VM to power off
+    param silent (bool): Whether or not to print the VM info
+    
+    return None"""
+    vm = search_vms(si, vm_name, silent)
+    if vm.runtime.powerState == 'poweredOn':
+        vm.PowerOff()
+        print(f"VM {vm_name} has been powered off")
+    else:
+        print(f"VM {vm_name} is already powered off")
+
 def restore_last_snapshot_vm(si, vm_name, silent):
+    """Restore the last snapshot of a VM
+    
+    param si (obj): The connection to vCenter
+    param vm_name (str): The name of the VM to restore the snapshot
+    param silent (bool): Whether or not to print the VM info
+    
+    return None"""
     vm = search_vms(si, vm_name, silent)
     if vm.runtime.powerState == 'poweredOn':
         print(f"VM {vm_name} is powered on. Please power off the VM before restoring a snapshot")
@@ -39,23 +93,23 @@ def restore_last_snapshot_vm(si, vm_name, silent):
         restore_last_snapshot_vm(si, vm_name, silent)
     else:
         try:
-            vm.snapshot.rootSnapshotList[0].snapshot.RevertToSnapshot_Task()
-            print(f"Snapshot {vm.snapshot.rootSnapshotList[0].name} has been restored for VM {vm_name}")
+            vm.snapshot.rootSnapshotList[-1].snapshot.RevertToSnapshot_Task()
+            print(f"Snapshot {vm.snapshot.rootSnapshotList[-1].name} has been restored for VM {vm_name}")
         except:
             print(f"VM {vm_name} does not have any snapshots. Taking a snapshot now")
             take_snapshot_vm(si, vm_name, 'Base', silent)
             input("Press Enter to continue... Once the snapshot is taken")
             restore_last_snapshot_vm(si, vm_name, silent)
 
-def power_off_vm(si, vm_name, silent):
-    vm = search_vms(si, vm_name, silent)
-    if vm.runtime.powerState == 'poweredOn':
-        vm.PowerOff()
-        print(f"VM {vm_name} has been powered off")
-    else:
-        print(f"VM {vm_name} is already powered off")
-
 def take_snapshot_vm(si, vm_name, snapshot_name, silent):
+    """Take a snapshot of a VM
+
+    param si (obj): The connection to vCenter
+    param vm_name (str): The name of the VM to take a snapshot
+    param snapshot_name (str): The name of the snapshot
+    param silent (bool): Whether or not to print the VM info
+    
+    return None"""
     vm = search_vms(si, vm_name, silent)
     if vm.runtime.powerState == 'poweredOff':
         vm.CreateSnapshot_Task(name=snapshot_name, memory=True, quiesce=False)
@@ -67,6 +121,14 @@ def take_snapshot_vm(si, vm_name, snapshot_name, silent):
         take_snapshot_vm(si, vm_name, snapshot_name, silent)
 
 def full_clone_vm(si, vm_name, clone_name, silent):
+    """Full clone a VM
+    
+    param si (obj): The connection to vCenter
+    param vm_name (str): The name of the VM to clone
+    param clone_name (str): The name of the clone
+    param silent (bool): Whether or not to print the VM info
+    
+    return None"""
     vm = search_vms(si, vm_name, silent)
     if vm.runtime.powerState == 'poweredOn':
         print(f"VM {vm_name} is powered on. Please power off the VM before cloning")
@@ -87,6 +149,14 @@ def full_clone_vm(si, vm_name, clone_name, silent):
     
 
 def linked_clone_vm(si, vm_name, clone_name, silent):
+    """Linked clone a VM
+    
+    param si (obj): The connection to vCenter
+    param vm_name (str): The name of the VM to clone
+    param clone_name (str): The name of the clone
+    param silent (bool): Whether or not to print the VM info
+    
+    return None"""
     vm = search_vms(si, vm_name, silent)
     if vm.runtime.powerState == 'poweredOn':
         print(f"VM {vm_name} is powered on. Please power off the VM before cloning")
@@ -112,12 +182,23 @@ def linked_clone_vm(si, vm_name, clone_name, silent):
 
 
 def print_vm(vm):
+    """Print the VM info
+
+    param vm (obj): The VM object"""
     if vm.guest.ipAddress == None:
         print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nIP Address: VM doesn't have an IP address \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
     else:
         print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nIP Address: {vm.guest.ipAddress} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
 
 def folder_search(si, folder, vm_name, silent):
+    """Search for VMs in a folder
+
+    param si (obj): The connection to vCenter
+    param folder (obj): The folder to search
+    param vm_name (str): The name of the VM to search for
+    param silent (bool): Whether or not to print the VM info
+    
+    return vm (obj): The VM object"""
     for vm in folder.childEntity:
         if type(vm) == vim.Folder:
             folder_search(si, vm, vm_name, silent)
@@ -131,6 +212,13 @@ def folder_search(si, folder, vm_name, silent):
                 print_vm(vm)
 
 def search_vms(si, vm_name, silent):
+    """Search for VMs in vCenter
+
+    param si (obj): The connection to vCenter
+    param vm_name (str): The name of the VM to search for
+    param silent (bool): Whether or not to print the VM info
+
+    return vm (obj): The VM object"""
     vmfolder = si.content.rootFolder.childEntity[0].vmFolder.childEntity
     for vcenter_object in vmfolder:
             if type(vcenter_object) == vim.Folder:
@@ -147,6 +235,10 @@ def search_vms(si, vm_name, silent):
                     print_vm(vm)
     
 def exit_handler(si):
-    """Disconnect from vCenter"""
+    """Disconnect from vCenter
+    
+    param si (obj): The connection to vCenter
+    
+    return None"""
     si.content.sessionManager.Logout()
     print('Logged out!')
