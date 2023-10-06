@@ -17,19 +17,18 @@ si = SmartConnect(host=Hostinfo, user=Userinfo, pwd=Passinfo, sslContext=s)
 
 
 current_session = si.content.sessionManager.currentSession
-print(f"Current Session: \n User Name: {current_session.userName} \n Source IP: {current_session.ipAddress} \n vCenter IP: {vCenterIP} \n")
+print(f"Current Session: \nUser Name: {current_session.userName} \nSource IP: {current_session.ipAddress} \nvCenter IP: {vCenterIP} \n")
 
 vm_name = input("Enter the name of the VM: ")
 
-try:
-    vmfolder = si.content.rootFolder.childEntity[0].vmFolder.childEntity
-    vm = [vm for vm in vmfolder if vm.name == vm_name][0]
-    if vm.guest.ipAddress == None:
-        print("VM doesn't have an IP address")
-        print(f"Name: {vm.name} \n Power State: {vm.runtime.powerState} \n CPU: {vm.config.hardware.numCPU} \n Memory: {vm.config.hardware.memoryMB / 1000} \n Guest OS: {vm.config.guestFullName} \n")
-    else:
-        print(f"Name: {vm.name} \n Power State: {vm.runtime.powerState} \n IP Address: {vm.guest.ipAddress} \n CPU: {vm.config.hardware.numCPU} \n Memory: {vm.config.hardware.memoryMB / 1000} \n Guest OS: {vm.config.guestFullName} \n")
-except:
-    print("VM not found")
+
+vmfolder = si.content.rootFolder.childEntity[0].vmFolder.childEntity
+vm = [vm for vm in vmfolder if vm.name == vm_name][0]
+if vm.guest.ipAddress == None:
+    print("VM doesn't have an IP address")
+    print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
+else:
+    print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nIP Address: {vm.guest.ipAddress} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
+
 
 
