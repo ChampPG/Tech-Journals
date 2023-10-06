@@ -2,8 +2,10 @@
 # 10/05/23
 # Purpose: Connect to vCenter and print out the about info
 
-import pyvmomi_modules
+import pyvmomi_modules as pm
 
-connection = pyvmomi_modules.connect('creds.ini')
+connection = pm.pyvmomi_modules()
+
+connection.connect('cred.ini')
 connection.get_vm()
-pyvmomi_modules.exit_handler()
+connection.exit_handler()
