@@ -8,6 +8,7 @@ file.read('creds.ini')
 Hostinfo = file['SERVERINFO']['host']
 Userinfo = file['SERVERINFO']['user']
 Passinfo = file['SERVERINFO']['password']
+vCenterIP = file['SERVERINFO']['vcenter_ip']
 
 s = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
 s.verify_mode = ssl.CERT_NONE
@@ -16,7 +17,7 @@ si = SmartConnect(host=Hostinfo, user=Userinfo, pwd=Passinfo, sslContext=s)
 
 
 current_session = si.content.sessionManager.currentSession
-print(f"Current Session: \n User Name: {current_session.userName} \n Source IP: {current_session.callerIp} \n vCenter IP: {current_session.ipAddress} \n")
+print(f"Current Session: \n User Name: {current_session.userName} \n Source IP: {current_session.ipAddress} \n vCenter IP: {vCenterIP} \n")
 
 vm_name = input("Enter the name of the VM: ")
 
