@@ -29,7 +29,14 @@ def print_vm(vm):
 
 vmfolder = si.content.rootFolder.childEntity[0].vmFolder.childEntity
 for vcenter_object in vmfolder:
-        try:
+        if type(vcenter_object) == vim.Folder:
+            for vm in vcenter_object.childEntity:
+                if vm_name:
+                    if vm.name == vm_name:
+                        print_vm(vm)
+                else:
+                    print_vm(vm)
+        else:
             if vm_name:
                 if vcenter_object.name == vm_name:
                     vm = vcenter_object
@@ -37,10 +44,4 @@ for vcenter_object in vmfolder:
             else:
                 vm = vcenter_object
                 print_vm(vm)
-        except AttributeError:
-            for vm in vcenter_object.childEntity:
-                if vm_name:
-                    if vm.name == vm_name:
-                        print_vm(vm)
-                else:
-                    print_vm(vm)
+        
