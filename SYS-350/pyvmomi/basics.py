@@ -23,12 +23,10 @@ vm_name = input("Enter the name of the VM: ")
 
 
 vmfolder = si.content.rootFolder.childEntity[0].vmFolder.childEntity
-vm = [vm for vm in vmfolder if vm.name == vm_name][0]
-if vm.guest.ipAddress == None:
-    print("VM doesn't have an IP address")
-    print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
-else:
-    print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nIP Address: {vm.guest.ipAddress} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
-
-
-
+for vm in vmfolder:
+    if vm.name == vm_name:
+        if vm.guest.ipAddress == None:
+            print("VM doesn't have an IP address")
+            print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
+        else:
+            print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nIP Address: {vm.guest.ipAddress} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
