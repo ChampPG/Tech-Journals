@@ -40,7 +40,6 @@ for vcenter_object in vmfolder:
                 vm = vcenter_object
                 print_vm(vm)
         except AttributeError:
-            print("Folder")
             for vm in vcenter_object.childEntity:
                 if vm_name:
                     if vm.name == vm_name:
