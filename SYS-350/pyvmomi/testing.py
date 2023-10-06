@@ -1,7 +1,6 @@
 import ssl, configparser
 from pyVim.connect import SmartConnect
 
-si = None
 
 def connect(file):
     """Connect to vCenter and print out the about info
@@ -24,11 +23,13 @@ def connect(file):
 
     match option:
         case '1':
-            show_connections()
+            show_connections(si)
         case '2':
-            show_current_session()
+            show_current_session(si)
 
-def get_vm():
+    return si
+
+def get_vm(si):
     """Print information for a particular virtual machine or recurse into a folder with depth protection"""
 
     option = input("Enter 1 to print all VMs or 2 to print specific VM: ")
@@ -60,13 +61,13 @@ def printing_vms(vm):
         print(f"Name: {vm.name} \n Power State: {vm.runtime.powerState} \n IP Address: {vm.guest.ipAddress} \n CPU: {vm.config.hardware.numCPU} \n Memory: {vm.config.hardware.memoryMB / 1000} \n Guest OS: {vm.config.guestFullName} \n")
 
 
-def show_current_session():
+def show_current_session(si):
     """Print information for the current session"""
     print("Current session info")
-    print(f"Username: {si.content.sessionManager.currentSession.userName} \n vCenter IP: {self.si.content.sessionManager.currentSession.ipAddress} \n Source IP: {self.si.content.sessionManager.currentSession.callerIp}")
+    print(f"Username: {si.content.sessionManager.currentSession.userName} \n vCenter IP: {si.content.sessionManager.currentSession.ipAddress} \n Source IP: {si.content.sessionManager.currentSession.callerIp}")
 
 
-def show_connections():
+def show_connections(si):
     """Print information for all sessions that are connected"""
     aboutInfo = si.content.about
     print(aboutInfo)
@@ -75,13 +76,13 @@ def show_connections():
     for session in si.content.sessionManager.sessionList:
         print(f"Username: {session.userName} \n vCenter IP: {session.ipAddress} \n Source IP: {session.callerIp}")
 
-def exit_handler():
+def exit_handler(si):
     """Disconnect from vCenter"""
     si.content.sessionManager.Logout()
     print('Logged out!')
 
 
 if __name__ == "__main__":
-    connect('cred.ini')
-    get_vm()
-    exit_handler()
+    si = connect('creds.ini')
+    get_vm(si)
+    exit_handler(si)
