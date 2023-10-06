@@ -49,17 +49,17 @@ for vcenter_object in vmfolder:
                     print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nIP Address: {vm.guest.ipAddress} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
         except AttributeError:
             print("Folder")
-            # for vm in vcenter_object:
-            #     if vm_name:
-            #         if vm_name == vm.name:
-            #             if vm.guest.ipAddress == None:
-            #                 print("VM doesn't have an IP address")
-            #                 print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
-            #             else:
-            #                 print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nIP Address: {vm.guest.ipAddress} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
-            #     else:
-            #         if vm.guest.ipAddress == None:
-            #             print("VM doesn't have an IP address")
-            #             print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
-            #         else:
-            #             print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nIP Address: {vm.guest.ipAddress} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
+            for vm in vcenter_object.childEntity:
+                if vm_name:
+                    if vm_name == vm.name:
+                        if vm.guest.ipAddress == None:
+                            print("VM doesn't have an IP address")
+                            print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
+                        else:
+                            print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nIP Address: {vm.guest.ipAddress} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
+                else:
+                    if vm.guest.ipAddress == None:
+                        print("VM doesn't have an IP address")
+                        print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
+                    else:
+                        print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nIP Address: {vm.guest.ipAddress} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
