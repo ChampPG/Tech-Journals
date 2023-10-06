@@ -25,6 +25,7 @@ vm_name = input("Enter the name of the VM: ")
 vmfolder = si.content.rootFolder.childEntity[0].vmFolder.childEntity
 for vm in vmfolder:
     if vm.name == vm_name:
+        print(vm.summary.config.name)
         if vm.guest.ipAddress == None:
             print("VM doesn't have an IP address")
             print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
