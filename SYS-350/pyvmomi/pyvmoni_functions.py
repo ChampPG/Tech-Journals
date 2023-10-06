@@ -38,15 +38,14 @@ def restore_last_snapshot_vm(si, vm_name, silent):
         input("Press Enter to continue... Once the VM is powered off")
         restore_last_snapshot_vm(si, vm_name, silent)
     else:
-        # try:
-        #     vm.snapshot.rootSnapshotList[0].snapshot.RevertToSnapshot_Task()
-        #     print(f"Snapshot {vm.snapshot.rootSnapshotList[0].snapshot.name} has been restored for VM {vm_name}")
-        # except:
-        #     print(f"VM {vm_name} does not have any snapshots. Taking a snapshot now")
-        #     take_snapshot_vm(si, vm_name, 'Base', silent)
-        #     restore_last_snapshot_vm(si, vm_name, silent)
-        vm.snapshot.rootSnapshotList[0].snapshot.RevertToSnapshot_Task()
-        print(f"Snapshot {vm.snapshot.rootSnapshotList[0].name} has been restored for VM {vm_name}")
+        try:
+            vm.snapshot.rootSnapshotList[0].snapshot.RevertToSnapshot_Task()
+            print(f"Snapshot {vm.snapshot.rootSnapshotList[0].name} has been restored for VM {vm_name}")
+        except:
+            print(f"VM {vm_name} does not have any snapshots. Taking a snapshot now")
+            take_snapshot_vm(si, vm_name, 'Base', silent)
+            input("Press Enter to continue... Once the snapshot is taken")
+            restore_last_snapshot_vm(si, vm_name, silent)
 
 def power_off_vm(si, vm_name, silent):
     vm = search_vms(si, vm_name, silent)
