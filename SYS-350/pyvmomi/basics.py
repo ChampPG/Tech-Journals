@@ -1,5 +1,6 @@
 import ssl, configparser
 from pyVim.connect import SmartConnect
+from pyVmomi import vim
 
 
 file = configparser.ConfigParser()
@@ -21,13 +22,18 @@ print(f"Current Session: \nUser Name: {current_session.userName} \nSource IP: {c
 
 vm_name = input("Enter the name of the VM: ")
 
+def is_folder(obj):
+    """Check if the object is a folder"""
+    if type(obj) == vim.Folder:
+        return True
+
 
 vmfolder = si.content.rootFolder.childEntity[0].vmFolder.childEntity
 for vm in vmfolder:
-    if vm.name == vm_name:
-        print(vm.summary.config.name)
-        if vm.guest.ipAddress == None:
-            print("VM doesn't have an IP address")
-            print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
-        else:
-            print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nIP Address: {vm.guest.ipAddress} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
+        if vm.name == vm_name:
+            print(vm.name)
+            if vm.guest.ipAddress == None:
+                print("VM doesn't have an IP address")
+                print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
+            else:
+                print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nIP Address: {vm.guest.ipAddress} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
