@@ -48,7 +48,6 @@ for vcenter_object in vmfolder:
                 else:
                     print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nIP Address: {vm.guest.ipAddress} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
         except AttributeError:
-            print("Folder")
             for vm in vcenter_object.childEntity:
                 if vm_name:
                     if vm_name == vm.name:
