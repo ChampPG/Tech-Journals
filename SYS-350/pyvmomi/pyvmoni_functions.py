@@ -3,10 +3,10 @@ Author: Paul Gleason
 File: pyvmomi_functions.py
 """
 
-
 import ssl, configparser
 from pyVim.connect import SmartConnect
 from pyVmomi import vim
+
 
 def parse_creds(file_name):
     """Parse the credentials from the config file
@@ -28,6 +28,7 @@ def parse_creds(file_name):
 
     return Hostinfo, Userinfo, Passinfo, vCenterIP
 
+
 def connect(Hostinfo, Userinfo, Passinfo, vCenterIP):
     """Connect to vCenter
 
@@ -47,6 +48,7 @@ def connect(Hostinfo, Userinfo, Passinfo, vCenterIP):
     print(f"Current Session: \nUser Name: {current_session.userName} \nSource IP: {current_session.ipAddress} \nvCenter IP: {vCenterIP} \n")
     return si
 
+
 def power_on_vm(si, vm_name, silent):
     """Power on a VM
     
@@ -62,6 +64,7 @@ def power_on_vm(si, vm_name, silent):
     else:
         print(f"VM {vm_name} is already powered on")
 
+
 def power_off_vm(si, vm_name, silent):
     """Power off a VM
 
@@ -76,6 +79,7 @@ def power_off_vm(si, vm_name, silent):
         print(f"VM {vm_name} has been powered off")
     else:
         print(f"VM {vm_name} is already powered off")
+
 
 def restore_last_snapshot_vm(si, vm_name, silent):
     """Restore the last snapshot of a VM
@@ -101,6 +105,35 @@ def restore_last_snapshot_vm(si, vm_name, silent):
             input("Press Enter to continue... Once the snapshot is taken")
             restore_last_snapshot_vm(si, vm_name, silent)
 
+
+def delete_snapshot_vm(si, vm_name, snapshot_name, silent):
+    """Delete a snapshot from a VM
+    
+    param si (obj): The connection to vCenter
+    param vm_name (str): The name of the VM to delete the snapshot
+    param snapshot_name (str): The name of the snapshot
+    param silent (bool): Whether or not to print the VM info
+    
+    return None"""
+    vm = search_vms(si, vm_name, silent)
+    if vm.runtime.powerState == 'poweredOn':
+        print(f"VM {vm_name} is powered on. Please power off the VM before deleting a snapshot")
+        power_off_vm(si, vm_name, silent)
+        input("Press Enter to continue... Once the VM is powered off")
+        delete_snapshot_vm(si, vm_name, snapshot_name, silent)
+    else:
+        try:
+            for snapshot in vm.snapshot.rootSnapshotList:
+                if snapshot.name == snapshot_name:
+                    snapshot.snapshot.RemoveSnapshot_Task(removeChildren=False)
+                    print(f"Snapshot {snapshot_name} has been deleted for VM {vm_name}")
+        except:
+            print(f"VM {vm_name} does not have any snapshots. Taking a snapshot now")
+            take_snapshot_vm(si, vm_name, 'Base', silent)
+            input("Press Enter to continue... Once the snapshot is taken")
+            delete_snapshot_vm(si, vm_name, snapshot_name, silent)
+
+
 def take_snapshot_vm(si, vm_name, snapshot_name, silent):
     """Take a snapshot of a VM
 
@@ -119,6 +152,7 @@ def take_snapshot_vm(si, vm_name, snapshot_name, silent):
         power_off_vm(si, vm_name, silent)
         input("Press Enter to continue... Once the VM is powered off")
         take_snapshot_vm(si, vm_name, snapshot_name, silent)
+
 
 def full_clone_vm(si, vm_name, clone_name, silent):
     """Full clone a VM
@@ -181,6 +215,55 @@ def linked_clone_vm(si, vm_name, clone_name, silent):
         print(f"Linked clone VM {vm_name} to {clone_name}")
 
 
+def delete_vm(si, vm_name, silent):
+    """Delete a VM
+    
+    param si (obj): The connection to vCenter
+    param vm_name (str): The name of the VM to delete
+    param silent (bool): Whether or not to print the VM info
+    
+    return None"""
+    vm = search_vms(si, vm_name, silent)
+    if vm.runtime.powerState == 'poweredOn':
+        print(f"VM {vm_name} is powered on. Please power off the VM before deleting")
+        power_off_vm(si, vm_name, silent)
+        input("Press Enter to continue... Once the VM is powered off")
+        delete_vm(si, vm_name, silent)
+    else:
+        vm.Destroy_Task()
+        print(f"VM {vm_name} has been deleted")
+
+
+# Work in Progress
+def change_vm_network(si, vm_name, network_name, silent):
+    """Change a VMs network
+    
+    param si (obj): The connection to vCenter
+    param vm_name (str): The name of the VM to change the network
+    param network_name (str): The name of the network
+    param silent (bool): Whether or not to print the VM info
+    
+    return None"""
+    vm = search_vms(si, vm_name, silent)
+    index = 1
+    print("Networks:")
+    for vm_network in vm.network:
+        print(index + " " + vm_network.name)
+        index += 1
+    network_index = input("Enter the index of the network to change to: ")
+    network = vm.network[int(network_index)]
+    index2 = 1
+    for device in vm.config.hardware.device:
+        if isinstance(device, vim.vm.device.VirtualEthernetCard):
+            print(index2 + " " + device.deviceInfo.label)
+            index2 += 1
+    device_index = input("Enter the index of the device to change to: ")
+    device = vm.config.hardware.device[int(device_index)]
+    config_spec = vim.vm.ConfigSpec(deviceChange=device)
+    vm.ReconfigVM_Task(config_spec)
+    print(f"VM {vm_name} has had network {network} changed to {network_name}")
+
+
 def print_vm(vm):
     """Print the VM info
 
@@ -189,6 +272,7 @@ def print_vm(vm):
         print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nIP Address: VM doesn't have an IP address \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
     else:
         print(f"Name: {vm.name} \nPower State: {vm.runtime.powerState} \nIP Address: {vm.guest.ipAddress} \nCPU: {vm.config.hardware.numCPU} \nMemory: {vm.config.hardware.memoryMB / 1000} \nGuest OS: {vm.config.guestFullName} \n")
+
 
 def folder_search(si, folder, vm_name, silent):
     """Search for VMs in a folder
@@ -210,6 +294,7 @@ def folder_search(si, folder, vm_name, silent):
                     return vm
             else:
                 print_vm(vm)
+
 
 def search_vms(si, vm_name, silent):
     """Search for VMs in vCenter
@@ -234,6 +319,7 @@ def search_vms(si, vm_name, silent):
                     vm = vcenter_object
                     print_vm(vm)
     
+
 def exit_handler(si):
     """Disconnect from vCenter
     
