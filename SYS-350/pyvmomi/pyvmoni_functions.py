@@ -258,7 +258,7 @@ def change_vm_network(si, vm_name, network_name, silent):
             print(index2 + " " + device.deviceInfo.label)
             index2 += 1
     device_index = input("Enter the index of the device to change to: ")
-    device = vm.config.hardware.device[int(device_index)]
+    device = vm.config.hardware.device[int(device_index)-1]
     config_spec = vim.vm.ConfigSpec(deviceChange=device)
     vm.ReconfigVM_Task(config_spec)
     print(f"VM {vm_name} has had network {network} changed to {network_name}")
