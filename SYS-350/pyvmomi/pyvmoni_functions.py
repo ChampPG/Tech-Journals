@@ -226,8 +226,9 @@ def delete_vm(si, vm_name, silent):
     vm = search_vms(si, vm_name, silent)
     if vm.runtime.powerState == 'poweredOn':
         print(f"VM {vm_name} is powered on. Please power off the VM before deleting")
-        power_off_vm(si, vm_name, silent)
-        input("Press Enter to continue... Once the VM is powered off")
+        task = power_off_vm(si, vm_name, silent)
+        while task.info.state != 'success':
+            pass
         delete_vm(si, vm_name, silent)
     else:
         vm.Destroy_Task()
