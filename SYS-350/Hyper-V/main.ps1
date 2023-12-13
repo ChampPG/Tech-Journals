@@ -70,12 +70,22 @@ function Get-VMDetails {
     )
 
     if ($null -eq $vmName) {
-        Get-VM | Select-Object -Property Name, State, @{Name='IPAddresses'; Expression={($_.NetworkAdapters).IPAddresses}}, HardDrives, MemoryAssigned, Uptime, Status, 
-        return
-    }else {
+        Get-VM | Select-Object -Property Name, State, 
+            @{Name='IPAddresses'; Expression={($_.NetworkAdapters).IPAddresses}},
+            HardDrives,
+            @{Name='MemoryAssignedMB'; Expression={$_.MemoryAssigned / 1MB}},
+            Uptime, 
+            Status
+    } else {
         $vm = Get-VM -Name $vmName
-        $vm | Select-Object -Property Name, State, @{Name='IPAddresses'; Expression={($_.NetworkAdapters).IPAddresses}}, HardDrives, MemoryAssigned, Uptime, Status
+        $vm | Select-Object -Property Name, State, 
+            @{Name='IPAddresses'; Expression={($_.NetworkAdapters).IPAddresses}},
+            HardDrives,
+            @{Name='MemoryAssignedMB'; Expression={$_.MemoryAssigned / 1MB}},
+            Uptime, 
+            Status
     }
+    
 }
 
 # Function to display menu and get user choice
