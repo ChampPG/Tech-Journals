@@ -34,7 +34,7 @@ function New-LinkedClone {
     $cloneVHD = $Path + $cloneName + ".vhdx"
     New-VHD -ParentPath $originalVHD -Path $cloneVHD -Differencing
 
-    New-VM -Name $cloneName -MemoryStartupBytes 1GB -VHDPath $cloneVHD -NewVHDSizeBytes 10GB -Generation 2 -SwitchName "LAN-INTERNAL"
+    New-VM -Name $cloneName -MemoryStartupBytes 1GB -VHDPath $cloneVHD -Generation 2 -SwitchName "LAN-INTERNAL"
     Set-VMFirmware -VMName $cloneName -EnableSecureBoot Off
     Checkpoint-VM -Name $cloneName -SnapshotName "Base"
 
