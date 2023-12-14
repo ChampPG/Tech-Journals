@@ -63,7 +63,7 @@ function Remove-VMInstance {
     )
     $Path = $Path = "C:\Users\Public\Documents\Hyper-V\Virtual hard disks\"
     $Folder = $Path + $vmName
-    $VHDX = $Path + $originalVM + ".vhdx"
+    $VHDX = $Path + $vmName + ".vhdx"
     
     Remove-VM -Name $vmName -Force
     Remove-Item $VHDX
