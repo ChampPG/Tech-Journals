@@ -32,10 +32,10 @@ function New-LinkedClone {
     $Path = "C:\Users\Public\Documents\Hyper-V\Virtual hard disks\"
     $originalVHD = $Path + $originalVM + ".vhdx"
     $cloneVHD = $Path + $cloneName + ".vhdx"
-    New-VHD -Path $originalVHD -Path $cloneVHD -Differencing
+    New-VHD -ParentPath $originalVHD -Path $cloneVHD -Differencing
 
     New-VM -Name $cloneName -MemoryStartupBytes 1GB -NewVHDPath $cloneVHD -NewVHDSizeBytes 10GB -Generation 2 -SwitchName "LAN-INTERNAL"
-    Set-Firmware -VMName $cloneName -EnableSecureBoot Off
+    Set-VMFirmware -VMName $cloneName -EnableSecureBoot Off
     Checkpoint-VM -Name $cloneName -SnapshotName "Base"
 
     Write-Host "Would you like to turn on the VM? (Y/N): "
@@ -61,7 +61,18 @@ function Remove-VMInstance {
     param (
         [string]$vmName
     )
+    $Path = $Path = "C:\Users\Public\Documents\Hyper-V\Virtual hard disks\"
+    $Folder = $Path + $vmName
+    $VHDX = $Path + $originalVM + ".vhdx"
+    
     Remove-VM -Name $vmName -Force
+    Remove-Item $VHDX
+
+    if (Test-Path -LiteralPath $Folder) {
+        Remove-Item -LiteralPath $Folder -Verbose -Recurse
+    } else {
+        "Path doesn't exist: $Folder"
+    }
 }
 
 function Get-VMDetails {
