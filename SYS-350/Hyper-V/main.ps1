@@ -77,7 +77,7 @@ function Remove-VMInstance {
 
 function Get-VMDetails {
     param (
-        [string]$vmName
+        [string]$vmName = $null
     )
 
     if ($null -eq $vmName) {
